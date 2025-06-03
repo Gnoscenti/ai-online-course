@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getCourses, getUserCourseProgress } from '../firebaseService'; // Import Firestore service
 import { Course, Module, Lesson, UserCourseProgress } from '../types/course'; // Import types
 import { useAuth } from '../context/AuthContext'; // For gating logic
@@ -93,8 +93,8 @@ const CourseOverviewPage: React.FC = () => {
             <div className="bg-gradient-to-r from-blue-900 to-indigo-900 p-4 rounded-lg flex flex-col md:flex-row justify-between items-center mb-6">
               <p className="text-white mb-4 md:mb-0 md:mr-4">Sign up to access all premium lessons and track your progress.</p>
               <div className="flex space-x-4">
-                <NavLink to="/login" className="btn btn-primary">Login</NavLink>
-                <NavLink to="/signup" className="btn btn-secondary">Sign Up</NavLink>
+                <Link to="/login" className="btn btn-primary">Login</Link>
+                <Link to="/signup" className="btn btn-secondary">Sign Up</Link>
               </div>
             </div>
           )}
