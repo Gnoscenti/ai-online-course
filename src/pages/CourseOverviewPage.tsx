@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getCourses, getUserCourseProgress } from '../firebaseService'; // Import Firestore service
 import { Course, Module, Lesson, UserCourseProgress } from '../types/course'; // Import types
 import { useAuth } from '../context/AuthContext'; // For gating logic
+import { mockCourseData } from '../mockCourseData'; // Import mock data as fallback
 
 const CourseOverviewPage: React.FC = () => {
   const { currentUser } = useAuth();
@@ -16,22 +17,39 @@ const CourseOverviewPage: React.FC = () => {
     const fetchCourseData = async () => {
       try {
         setLoading(true);
-        const courses = await getCourses();
-        if (courses.length > 0) {
-          const currentCourse = courses[0]; // Assuming we always load the first course for this page
-          setCourse(currentCourse);
-          if (currentUser && currentCourse) {
-            const progress = await getUserCourseProgress(currentUser.uid, currentCourse.id);
-            setUserProgress(progress);
+        
+        // Try to fetch from Firebase if user is authenticated
+        if (currentUser) {
+          try {
+            const courses = await getCourses();
+            if (courses.length > 0) {
+              const currentCourse = courses[0]; // Assuming we always load the first course for this page
+              setCourse(currentCourse);
+              const progress = await getUserCourseProgress(currentUser.uid, currentCourse.id);
+              setUserProgress(progress);
+              setLoading(false);
+              return;
+            }
+          } catch (firebaseErr) {
+            console.error("Firebase error:", firebaseErr);
+            // Continue to fallback if Firebase fails
           }
+        }
+        
+        // Fallback to mock data if not authenticated or Firebase fails
+        console.log("Using mock course data as fallback");
+        if (mockCourseData.length > 0) {
+          setCourse(mockCourseData[0]);
+          setLoading(false);
         } else {
           setError('No courses found.');
+          setLoading(false);
         }
       } catch (err) {
         console.error("Error fetching course data:", err);
         setError('Failed to load course data.');
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchCourseData();
@@ -65,15 +83,27 @@ const CourseOverviewPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gray-50 min-h-screen font-sans">
-      <div className="bg-white shadow-xl rounded-lg p-6 md:p-8">
-        <h1 className="text-4xl font-headings font-bold mb-4 text-gray-800">{course.title}</h1>
-        <p className="text-lg text-gray-600 mb-8 font-sans">{course.description}</p>
+    <div className="container mx-auto px-4 py-8 min-h-screen animate-fadeIn">
+      <div className="bg-gradient-to-b from-gray-800 to-gray-900 shadow-2xl rounded-lg p-6 md:p-8 border border-gray-700">
+        <div className="mb-8 pb-6 border-b border-gray-700">
+          <h1 className="text-4xl font-bold mb-4 text-white bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">{course.title}</h1>
+          <p className="text-lg text-gray-300 mb-4">{course.description}</p>
+          
+          {!currentUser && (
+            <div className="bg-gradient-to-r from-blue-900 to-indigo-900 p-4 rounded-lg flex flex-col md:flex-row justify-between items-center mb-6">
+              <p className="text-white mb-4 md:mb-0 md:mr-4">Sign up to access all premium lessons and track your progress.</p>
+              <div className="flex space-x-4">
+                <NavLink to="/login" className="btn btn-primary">Login</NavLink>
+                <NavLink to="/signup" className="btn btn-secondary">Sign Up</NavLink>
+              </div>
+            </div>
+          )}
+        </div>
 
         {course.modules.map((module: Module) => (
-          <div key={module.id} className="mb-10 p-6 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
-            <h2 className="text-2xl font-headings font-semibold mb-3 text-blue-600">{module.title}</h2>
-            <p className="text-gray-600 mb-5 text-sm font-sans">{module.description}</p>
+          <div key={module.id} className="mb-10 p-6 border border-gray-700 rounded-lg bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg hover:shadow-xl transition-all duration-300">
+            <h2 className="text-2xl font-semibold mb-3 text-blue-400">{module.title}</h2>
+            <p className="text-gray-300 mb-5">{module.description}</p>
             <ul className="space-y-3">
               {module.lessons.map((lesson: Lesson) => (
                 <li 
@@ -81,14 +111,14 @@ const CourseOverviewPage: React.FC = () => {
                   onClick={() => handleLessonClick(lesson, module.id)}
                   className={`flex justify-between items-center p-4 rounded-md transition-all duration-200 ease-in-out cursor-pointer 
                               ${(!lesson.isFree && (!currentUser /* Simplified gating */)) 
-                                ? 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-                                : 'bg-blue-50 hover:bg-blue-100 text-gray-700'}
-                              ${lesson.isFree ? 'border-l-4 border-green-500' : 'border-l-4 border-gray-300'}
-                              ${isLessonCompleted(lesson.id) ? 'opacity-70' : ''}
+                                ? 'bg-gray-800 text-gray-400 hover:bg-gray-700 border-l-4 border-gray-600'
+                                : 'bg-gray-800 hover:bg-gray-700 text-white border-l-4 border-blue-500'}
+                              ${isLessonCompleted(lesson.id) ? 'border-l-4 border-green-500' : ''}
+                              shadow-md hover:shadow-lg
                             `}
                 >
                   <div className="flex items-center">
-                    <span className="mr-3 text-blue-500">
+                    <span className="mr-3 text-blue-400">
                       {isLessonCompleted(lesson.id) ? (
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -99,19 +129,19 @@ const CourseOverviewPage: React.FC = () => {
                         </svg>
                       )}
                     </span>
-                    <span className={`font-sans font-medium ${isLessonCompleted(lesson.id) ? 'line-through text-gray-500' : ''}`}>{lesson.title}</span>
+                    <span className={`font-medium ${isLessonCompleted(lesson.id) ? 'line-through text-gray-500' : ''}`}>{lesson.title}</span>
                   </div>
                   <div className="flex items-center">
                     {lesson.isFree && (
-                      <span className="text-xs bg-green-200 text-green-700 px-2 py-1 rounded-full mr-2 font-sans">Free</span>
+                      <span className="text-xs bg-green-900 text-green-300 px-3 py-1 rounded-full mr-2 font-medium">Free</span>
                     )}
                     {(!lesson.isFree && (!currentUser /* Simplified gating */)) && (
-                      <span className="text-xs bg-yellow-200 text-yellow-700 px-2 py-1 rounded-full mr-2 font-sans">Premium</span>
+                      <span className="text-xs bg-purple-900 text-purple-300 px-3 py-1 rounded-full mr-2 font-medium">Premium</span>
                     )}
-                    <span className="text-gray-400 text-sm font-sans">
+                    <span className="text-gray-400 text-sm hidden md:inline">
                       {(!lesson.isFree && (!currentUser /* Simplified gating */)) ? 'Login to access' : 'View Lesson'}
                     </span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
