@@ -5,7 +5,7 @@ const HomePage: React.FC = () => {
   const handleEmailSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // Placeholder for email submission logic
-    alert("Inform your future, claim your Fre eu.
+    alert("Inform your future, claim your Free trial!");
     // Consider navigation or clearing the form
   };
 
