@@ -31,7 +31,8 @@ const HomePage: React.FC = () => {
       {/* Hero Section with enhanced animation and mobile optimization */}
       <section className={`relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-12 pb-24 transition-all duration-1000 ${animateHero ? 'opacity-100' : 'opacity-0'}`}>
         <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/70 to-purple-900/50 z-0"></div>
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 z-0"></div>
+        {/* Using inline SVG data URI instead of external file to avoid build issues */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\"><path d=\"M 20 0 L 0 0 0 20\" fill=\"none\" stroke=\"white\" stroke-width=\"0.5\" opacity=\"0.2\"/></svg>')] opacity-10 z-0"></div>
         <div className="z-10 flex flex-col items-center max-w-5xl mx-auto">
           {/* Enhanced animated avatar with glow effect */}
           <div className="relative">
