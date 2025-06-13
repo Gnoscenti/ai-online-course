@@ -23,3 +23,8 @@ yarn-debug.log*
 yarn-error.log*
 firebase-debug.log*
 service-account-key.json
+
+
+build_error.log
+build_verbose.log
+
