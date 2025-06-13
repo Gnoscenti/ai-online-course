@@ -5,25 +5,27 @@ This repository contains the frontend code for the AI Integration Course platfor
 ## Development Requirements
 
 ### Node.js Version Requirement
-**Important**: This project requires Node.js 16.x for development and building. 
+**Important**: This project requires Node.js 18.x for development and building. 
 
-Node.js 18.x, 20.x, and 22.x are known to cause build failures with this project. Please ensure you're using Node.js 16.x (specifically 16.18.126) before attempting to build or develop.
+Node.js 20.x and 22.x may cause compatibility issues with this project. Please ensure you're using Node.js 18.x (specifically 18.19.0) before attempting to build or develop.
+
+**Future Migration Note**: Node.js 18.x will be retiring on August 1st, 2025. A migration to Node.js 20.x is planned before that date.
 
 To check your Node.js version:
 ```bash
 node --version
 ```
 
-To install or switch to Node.js 16.x:
+To install or switch to Node.js 18.x:
 - Using nvm (recommended):
   ```bash
-  nvm install 16.18.126
-  nvm use 16.18.126
+  nvm install 18.19.0
+  nvm use 18.19.0
   ```
 - Using n:
   ```bash
   npm install -g n
-  n 16.18.126
+  n 18.19.0
   ```
 
 ### Environment Setup
@@ -38,9 +40,9 @@ To install or switch to Node.js 16.x:
 
 When deploying to Vercel, ensure the following settings:
 
-1. **Node.js Version**: Set the Node.js version to 16.x in your Vercel project settings
+1. **Node.js Version**: Set the Node.js version to 18.x in your Vercel project settings
    - Go to Project Settings > General > Node.js Version
-   - Select 16.x from the dropdown
+   - Select 18.x from the dropdown
 
 2. **Environment Variables**: Add all required Firebase environment variables
    - REACT_APP_FIREBASE_API_KEY
