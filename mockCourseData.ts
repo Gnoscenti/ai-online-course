@@ -5,7 +5,7 @@ const getTitleFromFilename = (filename: string): string => {
   // Remove prefix like "lessonXX_" and suffix "_draft.md"
   // e.g., "lesson26_ai_real_estate_intro_draft.md" -> "ai_real_estate_intro"
   const nameWithoutPrefix = filename.replace(/^lesson\d+_/, "");
-  const nameWithoutSuffix = nameWithoutPrefix.replace(/_draft\\.md$/, "");  // Convert underscores to spaces and capitalize
+  const nameWithoutSuffix = nameWithoutPrefix.replace(/_draft\.md$/, "");  // Convert underscores to spaces and capitalize
   return nameWithoutSuffix
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
